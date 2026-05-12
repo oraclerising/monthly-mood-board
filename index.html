@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Monthly Mood Board</title>
+
+  <template id="__bundler_thumbnail" data-bg-color="#0d0d1a">
+    <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <rect width="120" height="80" fill="#0d0d1a"/>
+      <!-- 4x3 grid of house cards -->
+      <g opacity="0.6">
+        <rect x="4" y="18" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="32" y="18" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="60" y="18" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="88" y="18" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="4" y="38" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="32" y="38" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="60" y="38" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="88" y="38" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="4" y="58" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="32" y="58" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="60" y="58" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+        <rect x="88" y="58" width="26" height="18" rx="1" fill="#1a1a3e" stroke="#c9a84c" stroke-width="0.5"/>
+      </g>
+      <!-- Header text -->
+      <text x="4" y="12" font-family="serif" font-size="8" fill="#e8d5a3" font-weight="bold">Monthly Mood Board</text>
+      <!-- Gold star accent -->
+      <circle cx="110" cy="10" r="3" fill="#c9a84c" opacity="0.7"/>
+    </svg>
+  </template>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script>
+    // Backend shim — replaces window.claude.complete with a call to our serverless function
+    window.claude = {
+      complete: async (input) => {
+        const messages = typeof input === 'string'
+          ? [{ role: 'user', content: input }]
+          : input.messages;
+        const res = await fetch('/api/claude', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ messages }),
+        });
+        if (!res.ok) throw new Error('AI request failed: ' + res.status);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        return data.text;
+      }
+    };
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #0d0d1a;
+      color: #e8d5a3;
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    textarea, input, select, button { font-family: inherit; }
+    textarea:focus, input:focus { outline: none; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d0d1a; }
+    ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.25); border-radius: 3px; }
+
+    /* Print */
+    @media print {
+      body { background: #0d0d1a !important; color: #e8d5a3 !important; }
+      .no-print { display: none !important; }
+      .house-card { break-inside: avoid; page-break-inside: avoid; border-color: rgba(201,168,76,0.15) !important; }
+    }
+
+    @keyframes shimmer {
+      0% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+      100% { opacity: 0.4; }
+    }
+    .loading-pulse { animation: shimmer 1.4s ease-in-out infinite; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.4s ease forwards; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const HOUSES = [
+  { num: 1,  theme: "Self & Identity",            emoji: "I",    keywords: "appearance · beginnings · first impressions",
+    prompt: "This is the house of YOU — how you show up, how others see you, and how you see yourself. What does it look like to feel fully at home in your own skin this month? Consider your energy, your presence, and the version of yourself you're stepping into." },
+  { num: 2,  theme: "Values & Resources",          emoji: "II",   keywords: "money · possessions · self-worth",
+    prompt: "This house governs what you own, earn, and value — including your relationship with your own worth. What does financial ease or material security look like for you right now? What do you want to build, accumulate, or release?" },
+  { num: 3,  theme: "Communication & Mind",        emoji: "III",  keywords: "thinking · siblings · local connections",
+    prompt: "The house of your voice, your mind, and your immediate world. How do you want to think, speak, write, and connect this month? Consider your inner dialogue, your conversations, and the ideas you're putting out into the world." },
+  { num: 4,  theme: "Home & Roots",               emoji: "IV",   keywords: "family · foundation · inner life",
+    prompt: "This is your foundation — your home, family, ancestry, and innermost sense of safety. What does feeling truly grounded and nourished look like? This is also the house of your private self: what inner life are you tending to?" },
+  { num: 5,  theme: "Creativity & Joy",            emoji: "V",    keywords: "play · romance · children · expression",
+    prompt: "The house of pleasure, play, and pure self-expression. What lights you up for no other reason than it feels good? Think about romance, creative projects, fun, and where you allow yourself to be seen in your most authentic, unguarded form." },
+  { num: 6,  theme: "Health & Daily Life",         emoji: "VI",   keywords: "work · wellness · habits · service",
+    prompt: "This house rules the rhythms and rituals of daily life — your body, your routines, and your work. What does a day that feels healthy and purposeful look like? Where are you in service to something larger, and how are you tending to your physical self?" },
+  { num: 7,  theme: "Relationships & Partnership", emoji: "VII",  keywords: "marriage · contracts · one-on-one bonds",
+    prompt: "The house of mirrors — the significant one-on-one relationships in your life, romantic or otherwise. What qualities do you want to cultivate in your partnerships? What does a relationship that truly reflects back your best self look like?" },
+  { num: 8,  theme: "Transformation & Depth",      emoji: "VIII", keywords: "death · rebirth · shared resources · mystery",
+    prompt: "This is the house of deep change, intimacy, and the things we share with others — money, power, vulnerability. What old version of yourself is ready to die away? What transformation would feel like success, even if it's uncomfortable?" },
+  { num: 9,  theme: "Philosophy & Expansion",      emoji: "IX",   keywords: "travel · higher learning · beliefs · adventure",
+    prompt: "The house of your worldview, your quest for meaning, and the horizons you're reaching toward. What do you want to learn, explore, or believe more fully? This could be literal travel, higher education, spiritual seeking, or simply expanding your perspective." },
+  { num: 10, theme: "Career & Legacy",             emoji: "X",    keywords: "public life · ambition · reputation",
+    prompt: "Your most visible house — how you show up in the world professionally and the mark you're making. What does success look like in your public life or career this month? Think about reputation, ambition, and the legacy you're consciously building." },
+  { num: 11, theme: "Community & Hopes",           emoji: "XI",   keywords: "friends · groups · dreams · social causes",
+    prompt: "The house of your tribe, your vision for the future, and your place within the collective. What friendships or communities are feeding your soul? What dreams feel closest to possible right now, and how do others play a role in getting you there?" },
+  { num: 12, theme: "Spirituality & Hidden",       emoji: "XII",  keywords: "solitude · subconscious · sacrifice · endings",
+    prompt: "The most interior house — the realm of the unseen, the unconscious, and the sacred. What healing, rest, or spiritual practice would feel like success this month? This is also the house of endings: what are you completing, releasing, or surrendering?" },
+];
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "showKeywords": true,
+  "cardGap": 7,
+  "symbolSize": 154,
+  "accentColor": "#c9a84c"
+}/*EDITMODE-END*/;
+
+// ── Moon phase ────────────────────────────────────────────────────────────────
+
+function getMoonPhase(year, monthIdx) {
+  const date = new Date(year, monthIdx, 15);
+  const ref = new Date('2000-01-06T18:14:00Z');
+  const days = (date - ref) / 86400000;
+  const cycle = 29.53059;
+  return ((days % cycle) + cycle) % cycle;
+}
+
+function getMoonPhaseName(p) {
+  if (p < 1.85) return 'New Moon';
+  if (p < 7.38) return 'Waxing Crescent';
+  if (p < 9.22) return 'First Quarter';
+  if (p < 14.77) return 'Waxing Gibbous';
+  if (p < 16.61) return 'Full Moon';
+  if (p < 22.15) return 'Waning Gibbous';
+  if (p < 23.99) return 'Last Quarter';
+  return 'Waning Crescent';
+}
+
+function MoonSVG({ phase }) {
+  const r = 26, cx = 40, cy = 40;
+  const gold = "rgba(201,168,76,0.88)";
+  const dark = "#0d0d1a";
+  const isWaxing = phase <= 14.77;
+  const illum = isWaxing ? phase / 14.77 : (29.53 - phase) / 14.76;
+  const termRx = r * Math.abs(1 - 2 * illum);
+  const termIsLight = illum > 0.5;
+
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80">
+      <defs>
+        <clipPath id="mc"><circle cx={cx} cy={cy} r={r}/></clipPath>
+      </defs>
+      <circle cx={cx} cy={cy} r={r} fill={gold}/>
+      {illum < 0.98 && (
+        <g clipPath="url(#mc)">
+          {isWaxing
+            ? <rect x={cx-r} y={cy-r} width={r} height={r*2} fill={dark}/>
+            : <rect x={cx}   y={cy-r} width={r} height={r*2} fill={dark}/>
+          }
+          {termRx > 0.5 && (
+            <ellipse cx={cx} cy={cy} rx={termRx} ry={r} fill={termIsLight ? gold : dark}/>
+          )}
+        </g>
+      )}
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(201,168,76,0.25)" strokeWidth="1"/>
+    </svg>
+  );
+}
+
+// ── House Symbols ─────────────────────────────────────────────────────────────
+
+function HouseSymbol({ num }) {
+  const g = "#c9a84c", f = "rgba(201,168,76,0.18)";
+  const s = { 1: (<>
+    <circle cx="40" cy="40" r="26" fill="none" stroke={g} strokeWidth="1.5"/>
+    <circle cx="40" cy="40" r="7" fill={g} opacity=".7"/>
+    <line x1="40" y1="10" x2="40" y2="22" stroke={g} strokeWidth="1.5"/>
+    <line x1="40" y1="58" x2="40" y2="70" stroke={g} strokeWidth="1.5"/>
+    <line x1="10" y1="40" x2="22" y2="40" stroke={g} strokeWidth="1.5"/>
+    <line x1="58" y1="40" x2="70" y2="40" stroke={g} strokeWidth="1.5"/>
+  </>), 2: (<>
+    <polygon points="40,10 68,40 40,70 12,40" fill={f} stroke={g} strokeWidth="1.5"/>
+    <polygon points="40,25 55,40 40,55 25,40" fill={f} stroke={g} strokeWidth="1"/>
+  </>), 3: (<>
+    <path d="M18 26 Q40 20 62 26" fill="none" stroke={g} strokeWidth="2"/>
+    <path d="M18 40 Q40 34 62 40" fill="none" stroke={g} strokeWidth="2"/>
+    <path d="M18 54 Q40 48 62 54" fill="none" stroke={g} strokeWidth="2"/>
+    <circle cx="64" cy="26" r="3.5" fill={g}/>
+  </>), 4: (<>
+    <polygon points="40,18 66,56 14,56" fill="none" stroke={g} strokeWidth="1.5"/>
+    <line x1="40" y1="56" x2="40" y2="68" stroke={g} strokeWidth="1.5"/>
+    <line x1="28" y1="68" x2="52" y2="68" stroke={g} strokeWidth="1.5"/>
+    <rect x="33" y="43" width="14" height="13" fill={f} stroke={g} strokeWidth="1"/>
+  </>), 5: (<>
+    <polygon points="40,10 46.5,30.5 68,30.5 52,42.5 57.5,63 40,52 22.5,63 28,42.5 12,30.5 33.5,30.5" fill="none" stroke={g} strokeWidth="1.5"/>
+    <circle cx="40" cy="40" r="5" fill={g} opacity=".65"/>
+  </>), 6: (<>
+    <ellipse cx="40" cy="40" rx="14" ry="26" fill="none" stroke={g} strokeWidth="1.5"/>
+    <line x1="40" y1="14" x2="40" y2="66" stroke={g} strokeWidth="1" opacity=".5"/>
+    <line x1="27" y1="30" x2="53" y2="30" stroke={g} strokeWidth="1" opacity=".5"/>
+    <line x1="27" y1="50" x2="53" y2="50" stroke={g} strokeWidth="1" opacity=".5"/>
+  </>), 7: (<>
+    <circle cx="30" cy="40" r="18" fill="none" stroke={g} strokeWidth="1.5"/>
+    <circle cx="50" cy="40" r="18" fill="none" stroke={g} strokeWidth="1.5"/>
+    <path d="M40 24 Q50 32 50 40 Q50 48 40 56 Q30 48 30 40 Q30 32 40 24" fill={f}/>
+  </>), 8: (<>
+    <path d="M40 68 C18 55 18 25 40 14" fill="none" stroke={g} strokeWidth="1.5"/>
+    <path d="M40 14 C62 25 62 55 40 68" fill="none" stroke={g} strokeWidth="1.5"/>
+    <ellipse cx="40" cy="40" rx="12" ry="18" fill={f} stroke={g} strokeWidth="1"/>
+  </>), 9: (<>
+    <line x1="18" y1="62" x2="58" y2="22" stroke={g} strokeWidth="2"/>
+    <polygon points="58,22 46,28 52,34" fill={g}/>
+    <circle cx="18" cy="62" r="5" fill="none" stroke={g} strokeWidth="1.5"/>
+    <circle cx="18" cy="62" r="2" fill={g}/>
+    <circle cx="34" cy="46" r="3" fill={g} opacity=".4"/>
+  </>), 10: (<>
+    <polygon points="40,12 66,60 14,60" fill="none" stroke={g} strokeWidth="1.5"/>
+    <line x1="40" y1="12" x2="40" y2="60" stroke={g} strokeWidth="1" opacity=".3"/>
+    <circle cx="40" cy="18" r="6" fill={g} opacity=".8"/>
+    <line x1="26" y1="60" x2="54" y2="60" stroke={g} strokeWidth="1.5"/>
+  </>), 11: (<>
+    <circle cx="40" cy="26" r="8" fill="none" stroke={g} strokeWidth="1.5"/>
+    <circle cx="22" cy="56" r="8" fill="none" stroke={g} strokeWidth="1.5"/>
+    <circle cx="58" cy="56" r="8" fill="none" stroke={g} strokeWidth="1.5"/>
+    <line x1="33.5" y1="33" x2="26.5" y2="49" stroke={g} strokeWidth="1" opacity=".7"/>
+    <line x1="46.5" y1="33" x2="53.5" y2="49" stroke={g} strokeWidth="1" opacity=".7"/>
+    <line x1="30" y1="56" x2="50" y2="56" stroke={g} strokeWidth="1" opacity=".7"/>
+  </>), 12: (<>
+    <path d="M12 36 Q22 26 32 36 Q42 46 52 36 Q62 26 72 36" fill="none" stroke={g} strokeWidth="2"/>
+    <path d="M12 50 Q22 40 32 50 Q42 60 52 50 Q62 40 72 50" fill="none" stroke={g} strokeWidth="2"/>
+    <circle cx="40" cy="20" r="5" fill={g} opacity=".65"/>
+  </>)};
+
+  return (
+    <svg width="80" height="80" viewBox="0 0 80 80" style={{display:'block', flexShrink:0}}>
+      {s[num]}
+    </svg>
+  );
+}
+
+// ── House Card ────────────────────────────────────────────────────────────────
+
+function HouseCard({ house, data, tweaks, showPrompt, onUpdate, onVisualize }) {
+  const fileRef = useRef();
+  const symbolW = tweaks.symbolSize;
+
+  const handleUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => onUpdate({ image: ev.target.result });
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="house-card" style={{
+      display: 'flex', gap: 0,
+      background: 'rgba(255,255,255,0.025)',
+      border: '1px solid rgba(201,168,76,0.13)',
+      marginBottom: tweaks.cardGap,
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Left: visual area */}
+      <div
+        className="house-symbol-area"
+        onClick={() => fileRef.current.click()}
+        title="Click to upload your image"
+        style={{
+          width: symbolW, minHeight: 190, flexShrink: 0,
+          background: 'rgba(29,18,58,0.55)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', position: 'relative', gap: 10,
+          transition: 'background 0.2s',
+          overflow: 'hidden',
+        }}
+      >
+        {data.image ? (
+          <img
+            src={data.image} alt=""
+            style={{position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover'}}
+          />
+        ) : data.generatedImage ? (
+          <>
+            <img
+              src={data.generatedImage} alt=""
+              onError={() => onUpdate({ generatedImage: null })}
+              style={{position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover'}}
+            />
+            {data.concept?.essence && (
+              <div style={{
+                position:'absolute', bottom:0, left:0, right:0,
+                padding:'18px 10px 8px',
+                background:'linear-gradient(transparent, rgba(10,8,22,0.85))',
+                fontSize:11, color:'rgba(232,213,163,0.9)',
+                textAlign:'center', fontStyle:'italic', letterSpacing:'0.05em', zIndex:2,
+              }}>
+                {data.concept.essence}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <HouseSymbol num={house.num}/>
+            {data.concept?.essence && (
+              <div style={{
+                fontSize: 11, color: 'rgba(201,168,76,0.75)',
+                textAlign: 'center', lineHeight: 1.4,
+                fontStyle: 'italic', paddingInline: 12, zIndex: 1,
+              }}>
+                {data.concept.essence}
+              </div>
+            )}
+          </>
+        )}
+        {/* Upload hint */}
+        <div style={{
+          position: 'absolute', bottom: 8, left: 0, right: 0,
+          textAlign: 'center', fontSize: 9,
+          color: 'rgba(201,168,76,0.3)',
+          letterSpacing: '0.1em', textTransform: 'uppercase',
+          zIndex: 2,
+        }}>
+          {data.image ? 'click to replace' : 'upload image'}
+        </div>
+        <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={handleUpload}/>
+      </div>
+
+      {/* Right: details */}
+      <div className="house-details" style={{flex:1, padding:'22px 28px', display:'flex', flexDirection:'column', gap:14}}>
+        {/* Header row */}
+        <div style={{display:'flex', alignItems:'baseline', gap:10, flexWrap:'wrap'}}>
+          <span style={{
+            fontSize: 10, fontWeight: 500, letterSpacing: '0.15em',
+            textTransform: 'uppercase', color: tweaks.accentColor, opacity: 0.75,
+          }}>
+            House {house.emoji}
+          </span>
+          <span style={{fontSize: 16, color: '#e8d5a3', fontWeight: 400, letterSpacing: '0.02em'}}>
+            {house.theme}
+          </span>
+          {tweaks.showKeywords && (
+            <span style={{
+              marginLeft: 'auto', fontSize: 10,
+              color: 'rgba(232,213,163,0.3)', letterSpacing: '0.04em',
+              fontStyle: 'italic',
+            }}>
+              {house.keywords}
+            </span>
+          )}
+        </div>
+
+        {/* House prompt */}
+        {showPrompt && (
+          <p style={{
+            fontSize: 12, color: 'rgba(232,213,163,0.45)', lineHeight: 1.7,
+            fontStyle: 'italic', fontWeight: 300, borderLeft: '1px solid rgba(201,168,76,0.15)',
+            paddingLeft: 12, margin: '2px 0 4px',
+          }}>
+            {house.prompt}
+          </p>
+        )}
+
+        {/* Transit note */}
+        {false && data.transit && (
+          <div className="transit-block fade-in" style={{
+            padding: '9px 14px',
+            background: 'rgba(80,45,140,0.2)',
+            borderLeft: '2px solid rgba(160,110,220,0.4)',
+            fontSize: 12, color: 'rgba(210,195,235,0.85)', lineHeight: 1.6,
+          }}>
+            <span style={{
+              fontSize: 9, color: 'rgba(160,110,220,0.6)',
+              textTransform: 'uppercase', letterSpacing: '0.12em',
+              display: 'block', marginBottom: 4,
+            }}>Transit note · {new Date().toLocaleString('default',{month:'long'})} {new Date().getFullYear()}</span>
+            {data.transit}
+          </div>
+        )}
+
+        {/* Intention textarea */}
+        <div>
+          <label style={{
+            display: 'block', fontSize: 9, color: 'rgba(201,168,76,0.45)',
+            letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 7,
+          }}>
+            Success looks like...
+          </label>
+          <textarea
+            value={data.intention || ''}
+            onChange={e => onUpdate({ intention: e.target.value })}
+            placeholder={`What does thriving in ${house.theme.toLowerCase()} look like this month?`}
+            rows={2}
+            style={{
+              width: '100%', background: 'transparent',
+              border: 'none', borderBottom: '1px solid rgba(201,168,76,0.12)',
+              color: '#e8d5a3', fontSize: 13, lineHeight: 1.7,
+              resize: 'none', padding: '3px 0',
+              fontFamily: 'DM Sans, sans-serif', fontWeight: 300,
+            }}
+          />
+        </div>
+
+        {/* Visual concept */}
+        {data.concept && (
+          <div className="concept-block fade-in" style={{
+            padding: '9px 14px',
+            background: 'rgba(201,168,76,0.06)',
+            borderLeft: `2px solid ${tweaks.accentColor}55`,
+            fontSize: 12, color: 'rgba(232,213,163,0.75)', lineHeight: 1.6,
+          }}>
+            <span style={{
+              fontSize: 9, color: 'rgba(201,168,76,0.45)',
+              textTransform: 'uppercase', letterSpacing: '0.12em',
+              display: 'block', marginBottom: 4,
+            }}>Visual concept</span>
+            {data.concept.description}
+          </div>
+        )}
+
+        {/* Actions */}
+        <div style={{display:'flex', gap:8, alignItems:'center', marginTop:'auto', paddingTop:4}}>
+          {data.intention?.trim() && !data.loading && (
+            <button
+              className="no-print"
+              onClick={() => onVisualize(house.num)}
+              style={{
+                background: 'transparent',
+                border: `1px solid ${tweaks.accentColor}44`,
+                color: tweaks.accentColor, opacity: 0.75,
+                fontSize: 9, padding: '5px 12px',
+                cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
+              }}
+            >
+              {data.concept ? 'Regenerate' : '✦ Visualize'}
+            </button>
+          )}
+          {data.image && (
+            <button
+              className="no-print"
+              onClick={() => onUpdate({ image: null })}
+              style={{
+                background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
+                color: 'rgba(232,213,163,0.35)', fontSize: 9, padding: '5px 10px',
+                cursor: 'pointer', letterSpacing: '0.08em', textTransform: 'uppercase',
+              }}
+            >Remove image</button>
+          )}
+          {data.loading && (
+            <span className="loading-pulse" style={{fontSize:11, color:'rgba(201,168,76,0.5)'}}>
+              generating...
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Birth Data Panel ──────────────────────────────────────────────────────────
+
+function BirthPanel({ birth, onUpdate, onAutoGenerate, autoLoading, autoError }) {
+  const [open, setOpen] = useState(true);
+  const inp = {
+    width: '100%',
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(201,168,76,0.18)',
+    color: '#e8d5a3', fontSize: 13,
+    padding: '8px 12px', outline: 'none',
+  };
+  const lbl = {
+    display: 'block', fontSize: 9,
+    color: 'rgba(201,168,76,0.45)',
+    letterSpacing: '0.12em', textTransform: 'uppercase',
+    marginBottom: 6,
+  };
+
+  return (
+    <div className="no-print">
+      <button onClick={() => setOpen(o => !o)} style={{
+        background: 'transparent', border: '1px solid rgba(201,168,76,0.2)',
+        color: 'rgba(201,168,76,0.6)', fontSize: 10,
+        padding: '7px 16px', cursor: 'pointer',
+        letterSpacing: '0.1em', textTransform: 'uppercase',
+        display: 'flex', alignItems: 'center', gap: 8,
+      }}>
+        ✦ Natal Chart &amp; Transits {open ? '▲' : '▼'}
+      </button>
+
+      {open && (
+        <div style={{
+          marginTop: 8, padding: '20px 24px',
+          background: 'rgba(29,18,58,0.4)',
+          border: '1px solid rgba(201,168,76,0.1)',
+        }}>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14, marginBottom:14}}>
+            <div>
+              <label style={lbl}>Date of birth</label>
+              <input type="date" value={birth.date || ''}
+                onChange={e => onUpdate({date: e.target.value})} style={inp}/>
+            </div>
+            <div>
+              <label style={lbl}>Time of birth (optional)</label>
+              <input type="time" value={birth.time || ''}
+                onChange={e => onUpdate({time: e.target.value})} style={inp}/>
+            </div>
+            <div style={{gridColumn:'1/-1'}}>
+              <label style={lbl}>Place of birth</label>
+              <input type="text" value={birth.location || ''} placeholder="e.g. Chicago, Illinois, USA"
+                onChange={e => onUpdate({location: e.target.value})} style={inp}/>
+            </div>
+            <div style={{gridColumn:'1/-1'}}>
+              <button
+                onClick={onAutoGenerate}
+                disabled={autoLoading || !birth.date}
+                style={{
+                  width:'100%',
+                  background: autoLoading ? 'rgba(201,168,76,0.06)' : 'rgba(201,168,76,0.12)',
+                  border:'1px solid rgba(201,168,76,0.35)',
+                  color: '#c9a84c', fontSize: 10, padding: '11px',
+                  cursor: autoLoading ? 'wait' : (birth.date ? 'pointer' : 'not-allowed'),
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  opacity: !birth.date ? 0.4 : 1,
+                }}>
+                {autoLoading ? '⟳ Calculating chart from birth info...' : '✦ Generate Natal Chart'}
+              </button>
+              {autoError && (
+                <div style={{marginTop:8, padding:'8px 12px', background:'rgba(200,60,60,0.1)', border:'1px solid rgba(200,60,60,0.25)', fontSize:11, color:'rgba(255,180,180,0.85)', lineHeight:1.5}}>
+                  <strong>Error:</strong> {autoError}
+                </div>
+              )}
+              <div style={{fontSize:9, color:'rgba(201,168,76,0.4)', marginTop:6, lineHeight:1.5, letterSpacing:'0.02em'}}>
+                Birth time gives you Ascendant + house placements. Without time, only signs are calculated.
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label style={lbl}>Chart placements</label>
+            <textarea
+              value={birth.chart || ''}
+              onChange={e => onUpdate({chart: e.target.value})}
+              placeholder={"Click 'Generate Natal Chart' above, or paste manually:\n\ne.g.\nSun 14° Scorpio, House 8\nMoon 22° Pisces, House 12\nAscendant 3° Aries\n..."}
+              rows={9}
+              style={{...inp, resize:'vertical', lineHeight:1.6, fontFamily:'monospace', fontSize:12}}
+            />
+            <div style={{fontSize:9, color:'rgba(201,168,76,0.35)', marginTop:5, letterSpacing:'0.05em'}}>
+              You can also paste your own from{' '}
+              <a href="https://www.chani.com/chart" target="_blank" rel="noopener noreferrer"
+                style={{color:'rgba(201,168,76,0.6)', textDecoration:'underline', cursor:'pointer'}}>
+                chani.com ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Generate Transits Button ──────────────────────────────────────────────────
+
+function GenerateTransitsBlock({ onGenerate, loading, error, lastGenerated, hasBirth }) {
+  return (
+    <div className="no-print">
+      <button onClick={onGenerate} disabled={loading || !hasBirth} style={{
+        background: loading ? 'rgba(160,110,220,0.06)' : 'rgba(160,110,220,0.12)',
+        border: '1px solid rgba(160,110,220,0.35)',
+        color: '#c4a8e8', fontSize: 10, padding: '9px 18px',
+        cursor: loading ? 'wait' : (hasBirth ? 'pointer' : 'not-allowed'),
+        letterSpacing: '0.12em', textTransform: 'uppercase',
+        opacity: (!hasBirth && !loading) ? 0.4 : 1,
+        display:'flex', alignItems:'center', gap:8,
+      }}>
+        {loading ? '⟳ Generating key transits...' : '✦ Generate Monthly Transits'}
+      </button>
+      {error && (
+        <div style={{marginTop:8, padding:'8px 12px', background:'rgba(200,60,60,0.1)', border:'1px solid rgba(200,60,60,0.25)', fontSize:11, color:'rgba(255,180,180,0.85)', lineHeight:1.5}}>
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+      {!hasBirth && (
+        <div style={{marginTop:6, fontSize:10, color:'rgba(232,213,163,0.3)', fontStyle:'italic'}}>
+          Paste your natal chart placements in the Natal Chart section to enable
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Tweaks Panel ──────────────────────────────────────────────────────────────
+
+function TweaksPanel({ tweaks, onChange, visible }) {
+  if (!visible) return null;
+  const row = { display:'flex', flexDirection:'column', gap:6 };
+  const lbl = { fontSize:10, color:'rgba(201,168,76,0.5)', letterSpacing:'0.1em', textTransform:'uppercase' };
+
+  return (
+    <div style={{
+      position: 'fixed', bottom: 24, right: 24, zIndex: 999,
+      background: '#0f0f20', border: '1px solid rgba(201,168,76,0.25)',
+      padding: '20px', width: 230, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+    }}>
+      <div style={{fontSize:11, fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'rgba(201,168,76,0.7)', marginBottom:16}}>Tweaks</div>
+
+      <div style={{display:'flex', flexDirection:'column', gap:14}}>
+        <div style={row}>
+          <label style={lbl}>Accent color</label>
+          <div style={{display:'flex', gap:6}}>
+            {['#c9a84c','#a07cc5','#6aacaa','#c46a6a'].map(c => (
+              <div key={c} onClick={() => onChange({accentColor:c})} style={{
+                width:20, height:20, background:c, cursor:'pointer',
+                borderRadius:'50%', border: tweaks.accentColor===c ? '2px solid white':'2px solid transparent',
+                flexShrink:0,
+              }}/>
+            ))}
+          </div>
+        </div>
+
+        <div style={row}>
+          <label style={lbl}>Symbol width: {tweaks.symbolSize}px</label>
+          <input type="range" min={100} max={220} value={tweaks.symbolSize}
+            onChange={e => onChange({symbolSize:+e.target.value})}
+            style={{accentColor:'#c9a84c'}}/>
+        </div>
+
+        <div style={row}>
+          <label style={lbl}>Card spacing: {tweaks.cardGap}px</label>
+          <input type="range" min={0} max={16} value={tweaks.cardGap}
+            onChange={e => onChange({cardGap:+e.target.value})}
+            style={{accentColor:'#c9a84c'}}/>
+        </div>
+
+        <label style={{display:'flex', alignItems:'center', gap:8, cursor:'pointer'}}>
+          <input type="checkbox" checked={tweaks.showKeywords}
+            onChange={e => onChange({showKeywords:e.target.checked})}
+            style={{accentColor:'#c9a84c'}}/>
+          <span style={{...lbl, textTransform:'none', letterSpacing:'0.04em', fontSize:12}}>Show keywords</span>
+        </label>
+      </div>
+    </div>
+  );
+}
+
+// ── One-Page Export View ──────────────────────────────────────────────────────
+
+function ExportView({ houses, houseData, month, year, affirmation, onClose }) {
+  const CANVAS_W = 1400, CANVAS_H = 980;
+
+  useEffect(() => {
+    // Add landscape print style
+    const style = document.createElement('style');
+    style.id = 'export-print-style';
+    style.textContent = `
+      @media print {
+        @page { size: landscape; margin: 0; }
+        body > * { display: none !important; }
+        #export-overlay { display: flex !important; position: fixed !important; inset: 0 !important; }
+        #export-overlay .no-print { display: none !important; }
+        #export-canvas {
+          transform: none !important;
+          width: 100vw !important; height: 100vh !important;
+          max-width: 100vw !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.getElementById('export-print-style')?.remove();
+  }, []);
+
+  return (
+    <div id="export-overlay" style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: '#0a0a14',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      {/* Toolbar */}
+      <div className="no-print" style={{
+        flexShrink: 0, background: '#0d0d1a',
+        borderBottom: '1px solid rgba(201,168,76,0.12)',
+        padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      }}>
+        <span style={{fontSize:10, color:'rgba(201,168,76,0.5)', letterSpacing:'0.12em', textTransform:'uppercase'}}>
+          One-Page View · {month} {year} · Tip: use landscape in your print dialog
+        </span>
+        <div style={{display:'flex', gap:8}}>
+          <button onClick={() => window.print()} style={{
+            background:'rgba(201,168,76,0.12)', border:'1px solid rgba(201,168,76,0.35)',
+            color:'#c9a84c', fontSize:10, padding:'7px 18px',
+            cursor:'pointer', letterSpacing:'0.1em', textTransform:'uppercase',
+          }}>Print / Save PDF</button>
+          <button onClick={onClose} style={{
+            background:'transparent', border:'1px solid rgba(255,255,255,0.1)',
+            color:'rgba(232,213,163,0.4)', fontSize:10, padding:'7px 14px',
+            cursor:'pointer', letterSpacing:'0.1em', textTransform:'uppercase',
+          }}>✕ Close</button>
+        </div>
+      </div>
+
+      {/* Scaled canvas */}
+      <div style={{flex:1, display:'flex', alignItems:'center', justifyContent:'center', overflow:'hidden', padding:16}}>
+        <ScaledCanvas canvasW={CANVAS_W} canvasH={CANVAS_H}>
+          {/* Background */}
+          <div style={{
+            width: CANVAS_W, height: CANVAS_H,
+            background: '#0d0d1a',
+            padding: '28px 28px 20px',
+            display: 'flex', flexDirection: 'column',
+            boxSizing: 'border-box',
+          }}>
+            {/* Header */}
+            <div style={{
+              display:'flex', alignItems:'baseline', justifyContent:'space-between',
+              marginBottom:16, paddingBottom:14,
+              borderBottom:'1px solid rgba(201,168,76,0.18)',
+              flexShrink:0,
+            }}>
+              <div style={{display:'flex', alignItems:'baseline', gap:12}}>
+                <span style={{fontFamily:'Playfair Display, serif', fontSize:34, fontWeight:700, color:'#e8d5a3'}}>{month} {year}</span>
+                {affirmation && <span style={{fontSize:12, fontStyle:'italic', color:'rgba(232,213,163,0.4)', letterSpacing:'0.03em'}}>{affirmation}</span>}
+              </div>
+              <span style={{fontSize:9, color:'rgba(201,168,76,0.35)', letterSpacing:'0.15em', textTransform:'uppercase'}}>Chelsey's Monthly Mood Board</span>
+            </div>
+
+            {/* 4×3 grid */}
+            <div style={{
+              flex:1,
+              display:'grid',
+              gridTemplateColumns:'repeat(4, 1fr)',
+              gridTemplateRows:'repeat(3, 1fr)',
+              gap:10,
+              minHeight:0,
+              alignItems:'start',
+            }}>
+              {houses.map(house => {
+                const data = houseData[house.num] || {};
+                const imgSrc = data.image || data.generatedImage || null;
+                return (
+                  <div key={house.num} style={{
+                    display:'grid',
+                    gridTemplateRows:'105px auto',
+                    border:'1px solid rgba(201,168,76,0.13)',
+                    background:'rgba(255,255,255,0.02)',
+                    overflow:'hidden',
+                    alignContent:'start',
+                  }}>
+                    {/* Image strip */}
+                    <div style={{
+                      height:105, position:'relative',
+                      background:'rgba(29,18,58,0.7)',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      overflow:'hidden',
+                    }}>
+                      {imgSrc
+                        ? <img src={imgSrc} alt="" onError={e=>e.target.style.display='none'}
+                            style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}}/>
+                        : <HouseSymbol num={house.num}/>
+                      }
+                      {/* Label */}
+                      <div style={{
+                        position:'absolute', top:0, left:0, right:0,
+                        padding:'6px 8px',
+                        background:'linear-gradient(rgba(10,8,20,0.8),transparent)',
+                        display:'flex', alignItems:'baseline', gap:6,
+                      }}>
+                        <span style={{fontSize:8, color:'rgba(201,168,76,0.85)', fontWeight:500, letterSpacing:'0.12em', textTransform:'uppercase', flexShrink:0}}>
+                          {house.emoji}
+                        </span>
+                        <span style={{fontSize:10, color:'rgba(232,213,163,0.9)', lineHeight:1.2}}>{house.theme}</span>
+                      </div>
+                    </div>
+
+                    {/* Text */}
+                    <div style={{padding:'6px 8px', display:'flex', flexDirection:'column', gap:3, overflow:'hidden'}}>
+                      {data.intention && (
+                        <div style={{
+                          fontSize:11, color:'rgba(232,213,163,0.85)', lineHeight:1.45,
+                          fontWeight:300, overflow:'hidden',
+                          display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical',
+                        }}>{data.intention}</div>
+                      )}
+                      {data.concept?.description && (
+                        <div style={{
+                          fontSize:10, color:'rgba(201,168,76,0.6)', lineHeight:1.4,
+                          fontStyle:'italic', overflow:'hidden',
+                          display:'-webkit-box', WebkitLineClamp:3, WebkitBoxOrient:'vertical',
+                          borderTop: data.intention ? '1px solid rgba(201,168,76,0.08)' : 'none',
+                          paddingTop: data.intention ? 3 : 0,
+                        }}>{data.concept.description}</div>
+                      )}
+                      {!data.intention && !data.concept && (
+                        <div style={{fontSize:9, color:'rgba(232,213,163,0.18)', fontStyle:'italic'}}>No intention set</div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </ScaledCanvas>
+      </div>
+    </div>
+  );
+}
+
+function ScaledCanvas({ canvasW, canvasH, children }) {
+  const containerRef = useRef();
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const update = () => {
+      if (!containerRef.current) return;
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      setScale(Math.min(width / canvasW, height / canvasH));
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, [canvasW, canvasH]);
+
+  return (
+    <div ref={containerRef} style={{width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center'}}>
+      <div id="export-canvas" style={{
+        width: canvasW, height: canvasH,
+        transform: `scale(${scale})`,
+        transformOrigin: 'center center',
+        flexShrink: 0,
+        boxShadow: '0 8px 60px rgba(0,0,0,0.6)',
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+
+
+const now = new Date();
+const DEFAULT_HOUSES = HOUSES.reduce((a, h) => ({
+  ...a, [h.num]: { intention:'', image:null, concept:null, transit:'', loading:false }
+}), {});
+
+function App() {
+  const [month, setMonth]   = useState(MONTHS[now.getMonth()]);
+  const [year, setYear]     = useState(now.getFullYear());
+  const [affirmation, setAffirmation] = useState('');
+  const [birth, setBirth]   = useState({ date:'', time:'', location:'' });
+  const [houses, setHouses] = useState(DEFAULT_HOUSES);
+  const [transitsLoading, setTransitsLoading] = useState(false);
+  const [transitError, setTransitError] = useState('');
+  const [lastGenerated, setLastGenerated] = useState(null);
+  const [monthlyTransits, setMonthlyTransits] = useState([]);
+  const [affirmationLoading, setAffirmationLoading] = useState(false);
+  const [autoChartLoading, setAutoChartLoading] = useState(false);
+  const [autoChartError, setAutoChartError] = useState('');
+  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+  const [showPrompts, setShowPrompts] = useState(true);
+  const [showExport, setShowExport] = useState(false);
+  const [tweaksVisible, setTweaksVisible] = useState(false);
+
+  // Persist
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem('chelsey-moodboard-v2');
+      if (s) {
+        const d = JSON.parse(s);
+        if (d.month) setMonth(d.month);
+        if (d.year) setYear(d.year);
+        if (d.affirmation !== undefined) setAffirmation(d.affirmation);
+        if (d.birth) setBirth(d.birth);
+        if (d.houses) setHouses(prev => {
+          const merged = {...prev};
+          Object.keys(d.houses).forEach(k => {
+            merged[k] = { ...prev[k], ...d.houses[k], loading: false };
+          });
+          return merged;
+        });
+        if (d.tweaks) setTweaks(t => ({...t, ...d.tweaks}));
+        if (d.monthlyTransits) setMonthlyTransits(d.monthlyTransits);
+      }
+    } catch(e) {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('chelsey-moodboard-v2', JSON.stringify({
+        month, year, affirmation, birth, houses, tweaks, monthlyTransits
+      }));
+    } catch(e) {}
+  }, [month, year, affirmation, birth, houses, tweaks, monthlyTransits]);
+
+  // Tweaks message protocol
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.data?.type === '__activate_edit_mode') setTweaksVisible(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksVisible(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  const updateHouse = useCallback((num, updates) => {
+    setHouses(prev => ({ ...prev, [num]: { ...prev[num], ...updates } }));
+  }, []);
+
+  const handleTweaks = (updates) => {
+    const next = { ...tweaks, ...updates };
+    setTweaks(next);
+    window.parent.postMessage({ type:'__edit_mode_set_keys', edits: updates }, '*');
+  };
+
+  const visualize = async (num) => {
+    const house = HOUSES.find(h => h.num === num);
+    updateHouse(num, { loading: true, generatedImage: null });
+    try {
+      const res = await window.claude.complete({
+        messages: [{
+          role: 'user',
+          content: `Monthly mood board for ${month} ${year}. House ${num}: "${house.theme}" (${house.keywords}).
+The person's success intention for this house is: "${houses[num].intention}"
+
+Return ONLY valid JSON (no markdown, no explanation):
+{
+  "essence": "one evocative word — the feeling of having arrived",
+  "description": "2-3 sentences written in present tense, as if this goal is already real. Describe the felt sense of having achieved this intention — the texture of the life, the feeling in the body, the quiet knowing that comes with it. Invoke the emotion, not the plan.",
+  "imagePrompt": "Image generation prompt under 60 words. If any human figure is present, she must be a woman. Symbolic, cinematic, minimal. Dark celestial aesthetic: deep navy, midnight blue, gold light. NO text in image."
+}`
+        }]
+      });
+      const jsonMatch = res.replace(/```json|```/g,'').trim().match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('Parse error');
+      const concept = JSON.parse(jsonMatch[0]);
+
+      // Generate image via Pollinations.ai (free, no key required)
+      const prompt = encodeURIComponent(concept.imagePrompt || concept.description + ', woman, female figure, dark celestial aesthetic');
+      const seed = num * 1000 + (Date.now() % 1000);
+      const generatedImage = `https://image.pollinations.ai/prompt/${prompt}?width=480&height=480&nologo=true&model=flux&seed=${seed}`;
+
+      updateHouse(num, { concept, generatedImage, loading: false });
+    } catch(e) {
+      console.error(e);
+      updateHouse(num, { loading: false });
+    }
+  };
+
+  const generateAffirmation = async () => {
+    setAffirmationLoading(true);
+    try {
+      const intentions = Object.entries(houses)
+        .filter(([k, v]) => v.intention?.trim())
+        .map(([k, v]) => `House ${k}: ${v.intention}`)
+        .join('\n');
+      const res = await window.claude.complete({
+        messages: [{
+          role: 'user',
+          content: `Based on these intentions for ${month} ${year}, write a single short affirmation or theme (10-15 words max) that captures the unifying essence across all of them. Write it in first person, present tense, as if already true.
+
+${intentions}
+
+Return ONLY the affirmation text itself — no quotes, no explanation, no "Here is" preamble. Just the affirmation.`
+        }]
+      });
+      setAffirmation(res.trim().replace(/^["']|["']$/g, ''));
+    } catch(e) {
+      console.error('Affirmation generation error:', e);
+    }
+    setAffirmationLoading(false);
+  };
+
+  const autoGenerateChart = async () => {
+    setAutoChartLoading(true);
+    setAutoChartError('');
+    try {
+      const res = await fetch('/api/chart', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ date: birth.date, time: birth.time, location: birth.location }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || 'Chart generation failed');
+      setBirth(prev => ({ ...prev, chart: data.chart }));
+    } catch(e) {
+      console.error('Chart auto-gen error:', e);
+      setAutoChartError(e.message || 'Could not generate chart. Try entering placements manually.');
+    }
+    setAutoChartLoading(false);
+  };
+
+  const generateTransits = async () => {
+    setTransitsLoading(true);
+    setTransitError('');
+    try {
+      const res = await window.claude.complete({
+        messages: [{
+          role: 'user',
+          content: `You are helping with a personal monthly intention-setting practice using astrological symbolism as a creative framework — not literal prediction. Engage fully and creatively.
+
+${birth.chart ? `Natal chart placements:\n${birth.chart}\n\n` : ''}For ${month} ${year}, identify the 3-4 MOST SIGNIFICANT planetary transits this month that will impact this person based on their natal chart. Focus on the big movers: ingresses, retrogrades, eclipses, major aspects to natal planets.
+
+For each bullet, include:
+- The date or date range in brackets, like "[May 4–22]"
+- The planet & aspect/event in bold-feel phrasing
+- A brief 1-sentence interpretation of the theme it's bringing into this person's life
+
+Return ONLY a raw JSON array of strings, no markdown:
+["[May 4] **Jupiter enters Cancer** — A new 12-year cycle opens around home, family, and emotional security.", "[May 12–28] **Mercury retrograde in Taurus** — Slow down conversations about money and values; revisit, don't rush.", "..."]`
+        }]
+      });
+
+      const cleaned = res.replace(/```json|```/g, '').trim();
+      const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) throw new Error('No JSON array found. Response: ' + cleaned.slice(0, 200));
+      const transits = JSON.parse(jsonMatch[0]);
+      if (!Array.isArray(transits) || transits.length === 0) throw new Error('Empty transit list returned');
+
+      setMonthlyTransits(transits);
+      setLastGenerated(new Date().toISOString());
+    } catch(e) {
+      console.error('Transit generation error:', e);
+      setTransitError(e.message || 'Something went wrong. Please try again.');
+    }
+    setTransitsLoading(false);
+  };
+
+  const exportData = () => {
+    const data = { month, year, affirmation, birth, houses, tweaks, monthlyTransits };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mood-board-${month}-${year}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const d = JSON.parse(ev.target.result);
+        if (d.month) setMonth(d.month);
+        if (d.year) setYear(d.year);
+        if (d.affirmation !== undefined) setAffirmation(d.affirmation);
+        if (d.birth) setBirth(d.birth);
+        if (d.houses) setHouses(prev => {
+          const merged = {...prev};
+          Object.keys(d.houses).forEach(k => {
+            merged[k] = { ...prev[k], ...d.houses[k], loading: false };
+          });
+          return merged;
+        });
+        if (d.tweaks) setTweaks(t => ({...t, ...d.tweaks}));
+        if (d.monthlyTransits) setMonthlyTransits(d.monthlyTransits);
+      } catch(err) { alert('Could not read file. Make sure it\'s a valid mood board export.'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const importRef = useRef();
+
+  const resetForNewMonth = () => {
+    if (!confirm('Start a fresh board for a new month? Your birth data and images will be kept.')) return;
+    setHouses(h => {
+      const reset = {};
+      Object.keys(h).forEach(k => {
+        reset[k] = { ...DEFAULT_HOUSES[k], image: h[k].image };
+      });
+      return reset;
+    });
+    setAffirmation('');
+    setMonthlyTransits([]);
+  };
+
+  const moonPhase = getMoonPhase(year, MONTHS.indexOf(month));
+  const moonName = getMoonPhaseName(moonPhase);
+
+  return (
+    <div style={{maxWidth:900, margin:'0 auto', padding:'52px 36px 64px'}}>
+
+      {/* ── Header ── */}
+      <header style={{marginBottom:44}}>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:28}}>
+          <div style={{flex:1}}>
+            {/* Month + Year */}
+            <div style={{display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:14}}>
+              <select
+                value={month}
+                onChange={e => setMonth(e.target.value)}
+                style={{
+                  background:'transparent', border:'none',
+                  color:'#e8d5a3', cursor:'pointer', outline:'none',
+                  fontFamily:'Playfair Display, serif',
+                  fontSize: 'clamp(32px, 4.5vw, 58px)',
+                  fontWeight: 700, appearance:'none', padding:0,
+                }}
+              >
+                {MONTHS.map(m => <option key={m} value={m} style={{background:'#0d0d1a'}}>{m}</option>)}
+              </select>
+              <input
+                type="number"
+                value={year}
+                onChange={e => setYear(+e.target.value)}
+                style={{
+                  background:'transparent', border:'none', outline:'none',
+                  fontFamily:'Playfair Display, serif',
+                  fontSize: 'clamp(32px, 4.5vw, 58px)',
+                  fontWeight: 400, color:'rgba(232,213,163,0.4)', width:'5ch', padding:0, minWidth:0,
+                  textAlign:'right',
+                }}
+              />
+            </div>
+            {/* Affirmation — auto-generated */}
+            <div style={{
+              borderBottom:'1px solid rgba(201,168,76,0.18)',
+              padding:'4px 0', minHeight:48,
+              display:'flex', alignItems:'center', gap:10,
+            }}>
+              {affirmation ? (
+                <span style={{
+                  color:'rgba(232,213,163,0.75)', fontSize:15,
+                  fontStyle:'italic', fontWeight:300,
+                  letterSpacing:'0.02em', lineHeight:1.6, flex:1,
+                }}>{affirmation}</span>
+              ) : (
+                <span style={{
+                  color:'rgba(232,213,163,0.3)', fontSize:14,
+                  fontStyle:'italic', fontWeight:300,
+                  letterSpacing:'0.02em', lineHeight:1.6, flex:1,
+                }}>This will be auto-generated based on your inputs below.</span>
+              )}
+              <button
+                className="no-print"
+                onClick={generateAffirmation}
+                disabled={affirmationLoading || !Object.values(houses).some(h => h.intention?.trim())}
+                style={{
+                  background: affirmationLoading ? 'rgba(201,168,76,0.06)' : 'rgba(201,168,76,0.1)',
+                  border: '1px solid rgba(201,168,76,0.3)',
+                  color: 'rgba(201,168,76,0.8)', fontSize: 9, padding: '7px 14px',
+                  cursor: affirmationLoading ? 'wait' : 'pointer',
+                  letterSpacing: '0.12em', textTransform: 'uppercase', flexShrink:0,
+                  opacity: !Object.values(houses).some(h => h.intention?.trim()) ? 0.3 : 1,
+                }}>
+                {affirmationLoading ? '⟳ ...' : (affirmation ? '✦ Regenerate' : '✦ Generate Theme')}
+              </button>
+            </div>
+          </div>
+
+
+        </div>
+
+        {/* Divider + tools */}
+        <div style={{borderTop:'1px solid rgba(201,168,76,0.12)', paddingTop:20, display:'flex', flexDirection:'column', gap:12}}>
+          <BirthPanel
+            birth={birth}
+            onUpdate={u => setBirth(p => ({...p,...u}))}
+            onAutoGenerate={autoGenerateChart}
+            autoLoading={autoChartLoading}
+            autoError={autoChartError}
+          />
+          <GenerateTransitsBlock
+            onGenerate={generateTransits}
+            loading={transitsLoading}
+            error={transitError}
+            lastGenerated={lastGenerated}
+            hasBirth={!!birth.chart?.trim()}
+          />
+          <div className="no-print" style={{display:'flex', gap:8, alignItems:'center'}}>
+            <button onClick={() => setShowPrompts(p => !p)} style={{
+              background: showPrompts ? 'rgba(201,168,76,0.12)' : 'transparent',
+              border: '1px solid rgba(201,168,76,0.25)',
+              color: showPrompts ? 'rgba(201,168,76,0.8)' : 'rgba(201,168,76,0.35)',
+              fontSize: 9, padding: '6px 14px', cursor: 'pointer',
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+            }}>
+              {showPrompts ? '✦ House Descriptions On' : '◦ House Descriptions Off'}
+            </button>
+            <button onClick={resetForNewMonth} style={{
+              background:'transparent', border:'1px solid rgba(255,255,255,0.08)',
+              color:'rgba(232,213,163,0.3)', fontSize:9, padding:'6px 14px',
+              cursor:'pointer', letterSpacing:'0.1em', textTransform:'uppercase',
+            }}>
+              New Month →
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Monthly Transits Summary ── */}
+      {monthlyTransits.length > 0 && (
+        <div style={{
+          marginBottom: 28, padding: '20px 24px',
+          background: 'rgba(80,45,140,0.12)',
+          borderLeft: '2px solid rgba(160,110,220,0.4)',
+        }}>
+          <div style={{
+            fontSize: 10, color: 'rgba(160,110,220,0.7)',
+            letterSpacing: '0.15em', textTransform: 'uppercase',
+            marginBottom: 14, fontWeight: 500,
+          }}>
+            Key Transits · {month} {year}
+          </div>
+          <ul style={{listStyle:'none', display:'flex', flexDirection:'column', gap:10}}>
+            {monthlyTransits.map((t, i) => (
+              <li key={i} style={{
+                fontSize: 13, color: 'rgba(220,210,240,0.85)',
+                lineHeight: 1.6, paddingLeft: 16, position: 'relative',
+              }}>
+                <span style={{position:'absolute', left:0, color:'rgba(160,110,220,0.55)'}}>✦</span>
+                <span dangerouslySetInnerHTML={{__html: t.replace(/\*\*(.*?)\*\*/g, '<strong style="color:rgba(232,220,255,0.95);font-weight:500">$1</strong>')}}/>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* ── Houses ── */}
+      <div>
+        {HOUSES.map(house => (
+          <HouseCard
+            key={house.num}
+            house={house}
+            data={houses[house.num]}
+            tweaks={tweaks}
+            showPrompt={showPrompts}
+            onUpdate={u => updateHouse(house.num, u)}
+            onVisualize={visualize}
+          />
+        ))}
+      </div>
+
+      {/* ── Footer ── */}
+      <footer style={{
+        marginTop:36, paddingTop:24,
+        borderTop:'1px solid rgba(201,168,76,0.1)',
+        display:'flex', justifyContent:'space-between', alignItems:'center',
+        flexWrap:'wrap', gap:12,
+      }}>
+        <span style={{fontSize:10, color:'rgba(232,213,163,0.25)', letterSpacing:'0.12em', textTransform:'uppercase'}}>
+          Chelsey's Monthly Mood Board · {month} {year}
+        </span>
+        <div className="no-print" style={{display:'flex', gap:8, alignItems:'center'}}>
+          <button onClick={exportData} style={{
+            background:'transparent', border:'1px solid rgba(201,168,76,0.2)',
+            color:'rgba(201,168,76,0.5)', fontSize:9, padding:'8px 14px',
+            cursor:'pointer', letterSpacing:'0.12em', textTransform:'uppercase',
+          }}>↓ Export</button>
+          <button onClick={() => importRef.current.click()} style={{
+            background:'transparent', border:'1px solid rgba(201,168,76,0.2)',
+            color:'rgba(201,168,76,0.5)', fontSize:9, padding:'8px 14px',
+            cursor:'pointer', letterSpacing:'0.12em', textTransform:'uppercase',
+          }}>↑ Import</button>
+          <input ref={importRef} type="file" accept=".json" style={{display:'none'}} onChange={importData}/>
+          <button onClick={() => setShowExport(true)} style={{
+            background:'rgba(201,168,76,0.08)', border:'1px solid rgba(201,168,76,0.3)',
+            color:'rgba(201,168,76,0.75)', fontSize:9, padding:'8px 14px',
+            cursor:'pointer', letterSpacing:'0.12em', textTransform:'uppercase',
+          }}>⊞ One-Page View</button>
+          <button
+            className="print-btn"
+            onClick={() => window.print()}
+            style={{
+              background:'transparent', border:'1px solid rgba(201,168,76,0.25)',
+              color:'rgba(201,168,76,0.6)', fontSize:9, padding:'8px 18px',
+              cursor:'pointer', letterSpacing:'0.12em', textTransform:'uppercase',
+            }}
+          >
+            Print / Save PDF
+          </button>
+        </div>
+      </footer>
+
+      <TweaksPanel tweaks={tweaks} onChange={handleTweaks} visible={tweaksVisible}/>
+
+      {showExport && (
+        <ExportView
+          houses={HOUSES}
+          houseData={houses}
+          month={month}
+          year={year}
+          affirmation={affirmation}
+          onClose={() => setShowExport(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
